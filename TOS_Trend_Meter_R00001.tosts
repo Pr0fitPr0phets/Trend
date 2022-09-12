@@ -1,0 +1,176 @@
+#########################################################
+#####            Trend Meter                        #####
+#########################################################
+
+#########################################################
+#####            Published by:                      #####
+#####            ZenExmachina                       #####
+#####            Khanvo                             #####
+#####            The_Ginger_Beast                   #####
+#########################################################
+
+#########################################################
+#####            Revision Control                   #####
+#####                                               #####
+#####            Revision 091022                    #####
+#########################################################
+
+#########################################################
+#####            Trend Meter 1                      #####
+#####            MACDCrossover Fast - Points        #####
+#########################################################
+
+declare lower;
+
+input fastLength = 8;
+input slowLength = 21;
+input MACDLength = 5;
+input averageType = AverageType.EXPONENTIAL;
+input showBreakoutSignals = no;
+
+plot Diff = MACD(fastLength, slowLength, MACDLength, averageType).Diff;
+plot UpSignal = if Diff crosses above 0 then 0 else Double.NaN;
+plot DownSignal = if Diff crosses below 0 then 0 else Double.NaN;
+
+UpSignal.SetHiding(!showBreakoutSignals);
+DownSignal.SetHiding(!showBreakoutSignals);
+
+Diff.SetDefaultColor(GetColor(5));
+Diff.SetPaintingStrategy(PaintingStrategy.POINTS);
+Diff.SetLineWeight(2);
+Diff.DefineColor("Positive and Up", Color.GREEN);
+Diff.DefineColor("Positive and Down", Color.GREEN);
+Diff.DefineColor("Negative and Down", Color.RED);
+Diff.DefineColor("Negative and Up", Color.RED);
+Diff.AssignValueColor(if Diff >= 0 then if Diff > Diff[1] then Diff.Color("Positive and Up") else Diff.Color("Positive and Down") else if Diff < Diff[1] then Diff.Color("Negative and Down") else Diff.Color("Negative and Up"));
+UpSignal.SetDefaultColor(Color.UPTICK);
+UpSignal.SetPaintingStrategy(PaintingStrategy.ARROW_UP);
+DownSignal.SetDefaultColor(Color.DOWNTICK);
+DownSignal.SetPaintingStrategy(PaintingStrategy.ARROW_DOWN);
+
+#########################################################
+#####            Trend Meter 2                      #####
+#####            RSI 13 - Squares                   #####
+#########################################################
+
+input RSI13Length = 13;
+input RSI13over_Bought = 50;
+input RSI13over_Sold = 50;
+input RSI13price = close;
+input RSI13AverageType = AverageType.WILDERS;
+input RSI13showBreakoutSignals = no;
+
+def RSI13NetChgAvg = MovingAverage(RSI13AverageType, RSI13price - RSI13price[1], RSI13Length);
+def RSI13TotChgAvg = MovingAverage(RSI13AverageType, AbsValue(RSI13price - RSI13price[1]), RSI13Length);
+def RSI13ChgRatio = if RSI13TotChgAvg != 0 then RSI13NetChgAvg / RSI13TotChgAvg else 0;
+
+plot RSI13 = 50 * (RSI13ChgRatio + 1);
+plot RSI13OverSold = RSI13over_Sold;
+plot RSI13OverBought = RSI13over_Bought;
+plot RSI13UpSignal = if RSI13 crosses above RSI13OverSold then RSI13OverSold else Double.NaN;
+plot RSI13DownSignal = if RSI13 crosses below RSI13OverBought then RSI13OverBought else Double.NaN;
+
+RSI13UpSignal.SetHiding(!RSI13showBreakoutSignals);
+RSI13DownSignal.SetHiding(!RSI13showBreakoutSignals);
+
+RSI13.SetPaintingStrategy(PaintingStrategy.SQUARES);
+RSI13.SetLineWeight(5);
+RSI13.DefineColor("OverBought", Color.GREEN);
+RSI13.DefineColor("Normal", GetColor(7));
+RSI13.DefineColor("OverSold", Color.RED);
+RSI13.AssignValueColor(if RSI13 > RSI13over_Bought then RSI13.Color("OverBought") else if RSI13 < RSI13over_Sold then RSI13.Color("OverSold") else RSI13.Color("Normal"));
+RSI13OverSold.SetDefaultColor(Color.RED);
+RSI13OverBought.SetDefaultColor(Color.GREEN);
+RSI13UpSignal.SetDefaultColor(Color.UPTICK);
+RSI13UpSignal.SetPaintingStrategy(PaintingStrategy.ARROW_UP);
+RSI13DownSignal.SetDefaultColor(Color.DOWNTICK);
+RSI13DownSignal.SetPaintingStrategy(PaintingStrategy.ARROW_DOWN);
+
+#########################################################
+#####            Trend Meter 3                      #####
+#####            RSI 5 - Triangles                  #####
+#########################################################
+
+input RSI5Length = 5;
+input RSI5over_Bought = 50;
+input RSI5over_Sold = 50;
+input RSI5price = close;
+input RSI5AverageType = AverageType.WILDERS;
+input RSI5showBreakoutSignals = no;
+
+def RSI5NetChgAvg = MovingAverage(RSI5AverageType, RSI5price - RSI5price[1], RSI5Length);
+def RSI5TotChgAvg = MovingAverage(RSI5AverageType, AbsValue(RSI5price - RSI5price[1]), RSI5Length);
+def RSI5ChgRatio = if RSI5TotChgAvg != 0 then RSI5NetChgAvg / RSI5TotChgAvg else 0;
+
+plot RSI5 = 50 * (RSI5ChgRatio + 1);
+plot RSI5OverSold = RSI5over_Sold;
+plot RSI5OverBought = RSI5over_Bought;
+plot RSI5UpSignal = if RSI5 crosses above RSI5OverSold then RSI5OverSold else Double.NaN;
+plot RSI5DownSignal = if RSI5 crosses below RSI5OverBought then RSI5OverBought else Double.NaN;
+
+RSI5UpSignal.SetHiding(!RSI5showBreakoutSignals);
+RSI5DownSignal.SetHiding(!RSI5showBreakoutSignals);
+
+RSI5.SetPaintingStrategy(PaintingStrategy.TRIANGLES);
+RSI5.SetLineWeight(5);
+RSI5.DefineColor("OverBought", Color.GREEN);
+RSI5.DefineColor("Normal", GetColor(7));
+RSI5.DefineColor("OverSold", Color.RED);
+RSI5.AssignValueColor(if RSI5 > RSI5over_Bought then RSI5.Color("OverBought") else if RSI5 < RSI5over_Sold then RSI5.Color("OverSold") else RSI5.Color("Normal"));
+RSI5OverSold.SetDefaultColor(GetColor(8));
+RSI5OverBought.SetDefaultColor(GetColor(8));
+RSI5UpSignal.SetDefaultColor(Color.UPTICK);
+RSI5UpSignal.SetPaintingStrategy(PaintingStrategy.ARROW_UP);
+RSI5DownSignal.SetDefaultColor(Color.DOWNTICK);
+RSI5DownSignal.SetPaintingStrategy(PaintingStrategy.ARROW_DOWN);
+
+#########################################################
+#####            Trend Bar 1                        #####
+#####            Fast EMA Crossover                 #####
+#########################################################
+
+input ExpAvgPrice5 = close;
+input ExpAvgPriceLength5 = 5;
+def ExpAvg5 = ExpAverage(ExpAvgPrice5, ExpAvgPriceLength5);
+
+input ExpAvgPrice11 = close;
+input ExpAvgPriceLength11 = 11;
+def ExpAvg11 = ExpAverage(ExpAvgPrice11, ExpAvgPriceLength11);
+
+plot EMA5above11 = (ExpAvg5 > ExpAvg11) + 10;
+
+EMA5above11.DefineColor("CrossOver", Color.GREEN);
+EMA5above11.DefineColor("Normal", GetColor(7));
+EMA5above11.DefineColor("CrossUnder", Color.RED);
+EMA5above11.AssignValueColor(if ExpAvg5 > ExpAvg11 then EMA5above11.Color("CrossOver") else if ExpAvg5 < ExpAvg11 then EMA5above11.Color("CrossUnder") else EMA5above11.Color("Normal"));
+
+EMA5above11.SetPaintingStrategy(PaintingStrategy.POINTS);
+EMA5above11.SetLineWeight(5);
+
+#########################################################
+#####            Trend Bar 2                        #####
+#####            Fast EMA Crossover                 #####
+#########################################################
+
+input ExpAvgPrice13 = close;
+input ExpAvgPriceLength13 = 13;
+def ExpAvg13 = ExpAverage(ExpAvgPrice13, ExpAvgPriceLength13);
+
+input ExpAvgPrice36 = close;
+input ExpAvgPriceLength36 = 36;
+def ExpAvg36 = ExpAverage(ExpAvgPrice36, ExpAvgPriceLength36);
+
+plot EMA13above36 = (ExpAvg13 > ExpAvg36) + 5;
+
+EMA13above36.DefineColor("CrossOver", Color.GREEN);
+EMA13above36.DefineColor("Normal", GetColor(7));
+EMA13above36.DefineColor("CrossUnder", Color.RED);
+EMA13above36.AssignValueColor(if ExpAvg13 > ExpAvg36 then EMA13above36.Color("CrossOver") else if ExpAvg13 < ExpAvg36 then EMA13above36.Color("CrossUnder") else EMA13above36.Color("Normal"));
+
+EMA13above36.SetPaintingStrategy(PaintingStrategy.POINTS);
+EMA13above36.SetLineWeight(5);
+
+
+#########################################################
+#####            MRR Alignment                      #####
+#########################################################
